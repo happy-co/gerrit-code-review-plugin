@@ -279,7 +279,7 @@ public abstract class AbstractGerritSCMSource extends AbstractGitSCMSource {
                             new ObjectMetadataAction(
                                 change.getName(),
                                 change.getId(),
-                                String.format("%s%d", gerritBaseUrl, change.getChangeNumber())))
+                                String.format("%s%s", gerritBaseUrl, change.getName())))
                     .collect(Collectors.toList());
               } else {
                 return Collections.emptyList();
@@ -411,9 +411,11 @@ public abstract class AbstractGerritSCMSource extends AbstractGitSCMSource {
       final TaskListener listener)
       throws IOException, InterruptedException {
     final String branchName = StringUtils.removeStart(ref.getKey(), R_CHANGES);
+    String[] changeParts = ref.getKey().split("/");
+    final String changeNumber = changeParts[1];
     boolean succeeded =
         request.process(
-            new ChangeSCMHead(ref, branchName),
+            new ChangeSCMHead(branchName, changeNumber),
             new SCMSourceRequest.IntermediateLambda<ObjectId>() {
               @Nullable
               @Override

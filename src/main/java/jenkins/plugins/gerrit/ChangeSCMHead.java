@@ -14,13 +14,11 @@
 
 package jenkins.plugins.gerrit;
 
-import java.util.Map;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead2;
-import org.eclipse.jgit.lib.ObjectId;
 
 /** Head corresponding to a change. */
 public class ChangeSCMHead extends SCMHead implements ChangeRequestSCMHead2 {
@@ -29,27 +27,11 @@ public class ChangeSCMHead extends SCMHead implements ChangeRequestSCMHead2 {
 
   private static final long serialVersionUID = 1;
 
-  private final int changeNumber;
+  private final String branchName;
 
-  private final int patchset;
-
-  ChangeSCMHead(Map.Entry<String, ObjectId> ref, String branchName) {
-    super(branchName);
-    changeNumber = parseChangeNumber(ref);
-    patchset = parsePatchset(ref);
-  }
-
-  private static int parseChangeNumber(Map.Entry<String, ObjectId> ref) {
-    return parseIntPart(ref, 3);
-  }
-
-  private static int parsePatchset(Map.Entry<String, ObjectId> ref) {
-    return parseIntPart(ref, 4);
-  }
-
-  private static int parseIntPart(Map.Entry<String, ObjectId> ref, int index) {
-    String[] changeParts = ref.getKey().split("/");
-    return Integer.parseInt(changeParts[index]);
+  ChangeSCMHead(String branchName, String changeNumber) {
+    super(changeNumber);
+    this.branchName = branchName;
   }
 
   /** {@inheritDoc} */
@@ -68,23 +50,19 @@ public class ChangeSCMHead extends SCMHead implements ChangeRequestSCMHead2 {
   @Nonnull
   @Override
   public String getOriginName() {
-    return getName();
+    return branchName;
   }
 
   /** {@inheritDoc} */
   @Nonnull
   @Override
   public String getId() {
-    return "C-" + changeNumber + "/" + patchset;
-  }
-
-  public int getChangeNumber() {
-    return changeNumber;
+    return "change-" + getName();
   }
 
   @Nonnull
   @Override
   public SCMHead getTarget() {
-    return new SCMHead(getName());
+    return new SCMHead(branchName);
   }
 }
