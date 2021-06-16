@@ -14,6 +14,7 @@
 
 package jenkins.plugins.gerrit;
 
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
@@ -82,9 +83,13 @@ public class GerritSCMSource extends AbstractGerritSCMSource {
 
   private final String remote;
 
+  @CheckForNull private String credentialsId;
+
+  private String apiRemote;
+
   private Boolean insecureHttps;
 
-  @CheckForNull private String credentialsId;
+  @CheckForNull private String apiCredentialsId;
 
   private List<SCMSourceTrait> traits = new ArrayList<>();
 
@@ -94,13 +99,23 @@ public class GerritSCMSource extends AbstractGerritSCMSource {
   }
 
   @DataBoundSetter
+  public void setCredentialsId(@CheckForNull String credentialsId) {
+    this.credentialsId = credentialsId;
+  }
+
+  @DataBoundSetter
+  public void setApiRemote(String apiRemote) {
+    this.apiRemote = apiRemote;
+  }
+
+  @DataBoundSetter
   public void setInsecureHttps(Boolean insecureHttps) {
     this.insecureHttps = insecureHttps;
   }
 
   @DataBoundSetter
-  public void setCredentialsId(@CheckForNull String credentialsId) {
-    this.credentialsId = credentialsId;
+  public void setApiCredentialsId(@CheckForNull String apiCredentialsId) {
+    this.apiCredentialsId = apiCredentialsId;
   }
 
   @DataBoundSetter
@@ -213,18 +228,39 @@ public class GerritSCMSource extends AbstractGerritSCMSource {
     setTraits(traits);
   }
 
-  @Override
-  public String getCredentialsId() {
-    return credentialsId;
-  }
-
   public String getRemote() {
     return remote;
   }
 
   @Override
+  public String getCredentialsId() {
+    return credentialsId;
+  }
+
+  public String getApiRemote() {
+    return apiRemote;
+  }
+
+  @Override
   public Boolean getInsecureHttps() {
     return insecureHttps;
+  }
+
+  @CheckForNull
+  public StandardUsernameCredentials getApiCredentials() {
+    String credentialsId =
+        this.apiCredentialsId != null ? this.apiCredentialsId : this.credentialsId;
+    if (credentialsId == null) {
+      return null;
+    }
+    return CredentialsMatchers.firstOrNull(
+        CredentialsProvider.lookupCredentials(
+            StandardUsernameCredentials.class,
+            getOwner(),
+            ACL.SYSTEM,
+            URIRequirementBuilder.fromUri(getRemote()).build()),
+        CredentialsMatchers.allOf(
+            CredentialsMatchers.withId(credentialsId), GitClient.CREDENTIALS_MATCHER));
   }
 
   @Restricted(DoNotUse.class)

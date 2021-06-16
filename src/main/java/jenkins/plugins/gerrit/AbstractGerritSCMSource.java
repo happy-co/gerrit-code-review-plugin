@@ -14,6 +14,7 @@
 
 package jenkins.plugins.gerrit;
 
+import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.google.common.collect.ImmutableList;
 import com.google.gerrit.extensions.api.GerritApi;
 import com.google.gerrit.extensions.api.changes.Changes;
@@ -89,6 +90,10 @@ public abstract class AbstractGerritSCMSource extends AbstractGitSCMSource {
   }
 
   public AbstractGerritSCMSource() {}
+
+  public abstract String getApiRemote();
+
+  public abstract StandardUsernameCredentials getApiCredentials();
 
   @SuppressFBWarnings(value = "NP_BOOLEAN_RETURN_NULL", justification = "Overridden")
   public Boolean getInsecureHttps() {
@@ -702,8 +707,8 @@ public abstract class AbstractGerritSCMSource extends AbstractGitSCMSource {
       @Nonnull TaskListener listener, GerritURI remoteUri) throws IOException {
     try {
       UsernamePasswordCredentialsProvider.UsernamePassword credentials =
-          new UsernamePasswordCredentialsProvider(getCredentials())
-              .getUsernamePassword(remoteUri.getRemoteURI());
+          new UsernamePasswordCredentialsProvider(getApiCredentials())
+              .getUsernamePassword(remoteUri.getApiURI());
 
       return new GerritApiBuilder()
           .logger(listener.getLogger())
@@ -742,7 +747,8 @@ public abstract class AbstractGerritSCMSource extends AbstractGitSCMSource {
 
   public GerritURI getGerritURI() throws IOException {
     try {
-      return new GerritURI(new URIish(getRemote()));
+      return new GerritURI(
+          new URIish(getRemote()), getApiRemote() != null ? new URIish(getApiRemote()) : null);
     } catch (URISyntaxException e) {
       throw new IOException(e);
     }

@@ -25,6 +25,7 @@ public class GerritURI {
       Pattern.compile("(/)([^\\.]+)(\\.git)?");
 
   private final URIish remoteURI;
+  private final URIish apiURI;
 
   /**
    * Create a new Gerrit URI from the given remote {@link URIish URI}.
@@ -32,7 +33,18 @@ public class GerritURI {
    * @param remoteURI the remote URI, e.g. https://host/a/project
    */
   public GerritURI(URIish remoteURI) {
+    this(remoteURI, null);
+  }
+
+  /**
+   * Create a new Gerrit URI from the given remote {@link URIish URI}.
+   *
+   * @param remoteURI the remote URI, e.g. ssh://host/project
+   * @param apiURI the API URI, e.g. https://host/
+   */
+  public GerritURI(URIish remoteURI, URIish apiURI) {
     this.remoteURI = remoteURI;
+    this.apiURI = apiURI;
   }
 
   /**
@@ -100,7 +112,7 @@ public class GerritURI {
    * @throws URISyntaxException if URL is invalid.
    */
   public URIish getApiURI() throws URISyntaxException {
-    return remoteURI.setRawPath(getPrefix());
+    return apiURI != null ? apiURI : remoteURI.setRawPath(getPrefix());
   }
 
   /**

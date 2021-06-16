@@ -19,10 +19,16 @@
   <f:entry title="${%Project Repository}" field="remote">
     <f:textbox/>
   </f:entry>
+  <f:entry title="${%Credentials}" field="credentialsId">
+    <c:select/>
+  </f:entry>
+  <f:entry title="${%API URL}" field="apiRemote">
+    <f:textbox/>
+  </f:entry>
   <f:entry title="${%Insecure HTTPS}" field="insecureHttps">
     <f:checkbox/>
   </f:entry>
-  <f:entry title="${%Credentials}" field="credentialsId">
+  <f:entry title="${%Credentials}" field="apiCredentialsId">
     <c:select/>
   </f:entry>
   <f:entry title="${%Behaviours}">
