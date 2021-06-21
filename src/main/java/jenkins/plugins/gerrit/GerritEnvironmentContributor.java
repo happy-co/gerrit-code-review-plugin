@@ -62,7 +62,7 @@ public class GerritEnvironmentContributor extends EnvironmentContributor {
         (GerritSCMSource) multiBranchProject.getSources().get(0).getSource();
     GerritURI gerritURI = gerritSCMSource.getGerritURI();
 
-    envs.put("GERRIT_CREDENTIALS_ID", gerritSCMSource.getCredentialsId());
+    envs.put("GERRIT_CREDENTIALS_ID", gerritSCMSource.getApiCredentialsId());
     envs.put("GERRIT_PROJECT", gerritURI.getProject());
     try {
       envs.put("GERRIT_API_URL", gerritURI.getApiURI().toString());

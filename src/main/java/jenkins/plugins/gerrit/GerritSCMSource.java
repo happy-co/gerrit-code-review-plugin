@@ -247,7 +247,7 @@ public class GerritSCMSource extends AbstractGerritSCMSource {
   }
 
   public String getApiCredentialsId() {
-    return apiCredentialsId;
+    return apiCredentialsId != null ? apiCredentialsId : credentialsId;
   }
 
   @CheckForNull
