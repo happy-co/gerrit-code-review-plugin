@@ -246,6 +246,10 @@ public class GerritSCMSource extends AbstractGerritSCMSource {
     return insecureHttps;
   }
 
+  public String getApiCredentialsId() {
+    return apiCredentialsId;
+  }
+
   @CheckForNull
   public StandardUsernameCredentials getApiCredentials() {
     String credentialsId =
@@ -318,6 +322,13 @@ public class GerritSCMSource extends AbstractGerritSCMSource {
     @Override
     public String getDisplayName() {
       return jenkins.plugins.gerrit.Messages.GerritSCMSource_DisplayName();
+    }
+
+    public ListBoxModel doFillApiCredentialsIdItems(
+        @AncestorInPath Item context,
+        @QueryParameter String remote,
+        @QueryParameter String apiCredentialsId) {
+      return doFillCredentialsIdItems(context, remote, apiCredentialsId);
     }
 
     @SuppressWarnings("deprecation")
