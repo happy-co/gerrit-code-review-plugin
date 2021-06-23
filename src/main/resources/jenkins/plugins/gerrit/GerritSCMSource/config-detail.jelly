@@ -28,7 +28,7 @@
   <f:entry title="${%Insecure HTTPS}" field="insecureHttps">
     <f:checkbox/>
   </f:entry>
-  <f:entry title="${%Credentials}" field="apiCredentialsId">
+  <f:entry title="${%API Credentials}" field="apiCredentialsId">
     <c:select/>
   </f:entry>
   <f:entry title="${%Behaviours}">
